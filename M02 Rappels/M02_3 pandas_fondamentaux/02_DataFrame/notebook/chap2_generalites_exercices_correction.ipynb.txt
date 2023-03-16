@@ -1,0 +1,210 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Généralités\n",
+    "\n",
+    "## Exercices manipulation des index & column\n",
+    "\n",
+    "Remplacez à l'aide de la méthode replace de Pandas les données manquantes par np.nan de Numpy :\n",
+    "\n",
+    "```python\n",
+    "df = pd.DataFrame(\n",
+    "    [\n",
+    "        [1, \"2\", None, 3],\n",
+    "        [4, None, \"5\", 6],\n",
+    "        [7, 8, 9, 10],\n",
+    "        [\"None\", \"\", None, \"NAN\"],\n",
+    "    ],\n",
+    "    index=['a', 'b', 'c', 'd'],\n",
+    "    columns = ['A', 'B', 'C', 'D']\n",
+    ")\n",
+    "\n",
+    "```\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Exercice convertir un array Numpy en DataFrame\n",
+    "\n",
+    "Redimensionnez la série suivantes en un DataFrame de dimension 3 lignes 5 colonnes, nommez les lignes a, b, c et les 5 colonnes avec d e f g h :\n",
+    "\n",
+    "```python\n",
+    "A = pd.Series(np.random.randint(1, 10, 15))\n",
+    "```\n",
+    "\n",
+    "Utilisez l'attribut values sur la série A pour pouvoir utiliser sur le np.array la méthode reshape pour redimensionner le tableau.\n",
+    "\n",
+    "```python\n",
+    "A = pd.Series(np.random.randint(1, 10, 15))\n",
+    "B = pd.DataFrame( A.values.reshape(3,5), index=list(\"abc\"), columns=list(\"defgh\") )\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "On définit d'abord la série A, puis il faut reprendre la série A et extraire de celle-ci le tableau numpy, on pourra alors redimensionner le tableau :\n",
+    "\n",
+    "```python\n",
+    "A = pd.Series(np.random.randint(1, 10, 15))\n",
+    "B = pd.DataFrame( A.values.reshape(3,5), index=list(\"abc\"), columns=list(\"defgh\") )\n",
+    "print(B)\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Exercice appliquer une fonction à un DataFrame\n",
+    "\n",
+    "Soit le DataFrame C suivant :\n",
+    "\n",
+    "```python\n",
+    "\n",
+    "C = pd.DataFrame( np.random.randn(5, 5), columns=list(\"abcde\"), index=list(\"fghij\" ))\n",
+    "\n",
+    "```\n",
+    "\n",
+    "1. Mettez l'ensemble des valeurs en valeur absolue. Utilisez la fonction np.abs de Numpy.\n",
+    "\n",
+    "2. Calculez l'amplitude des valeurs sur les lignes puis les colonnes. Vous pouvez utiliser la fonction apply sur le DataFrame.\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "```python\n",
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "\n",
+    "C = pd.DataFrame( np.random.randn(5, 5), columns=list(\"abcde\"), index=list(\"fghij\" ))\n",
+    "\n",
+    "# 1. On peut pour cela directement applique la fonction np.abs de Numpy sur l'ensemble des valeurs du DataFrame\n",
+    "C.apply(abs, inplace=True)\n",
+    "\n",
+    "\n",
+    "# 2. Amplitude des valeurs sur les lignes\n",
+    "\n",
+    "print( C.apply(lambda x : x.max() - x.min(), axis=1 ) )\n",
+    "\n",
+    "# 2. Amplitude des valeurs sur les colonnes\n",
+    "\n",
+    "print( C.apply(lambda x : x.max() - x.min(), axis=0 ) )\n",
+    "\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Exercice somme et remplacement\n",
+    "\n",
+    "Soit le DataFrame suivant :\n",
+    "\n",
+    "```python\n",
+    "C = pd.DataFrame( np.random.randn(5, 5), columns=list(\"abcde\"), index=list(\"fghij\"))\n",
+    "```\n",
+    "\n",
+    "1. Faites la somme de toutes les valeurs négatives de C.\n",
+    "\n",
+    "2. Remplacez dans la colonne b les valeurs négatives par la moyenne des valeurs positives de la colonne."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Pour la somme on utilise deux fois la méthode somme. La première application de cette fonction sur le DF donnera une série en la ré-appliquant sur cette dernière (série) on aura un nombre représentant la somme recherchée.\n",
+    "\n",
+    "Dans la question 2. on utilise la méthode loc qui a deux paramètres row et column. Le fait de sélectionner les valeurs négatives sur la colonne b crée un mask. Ce dernier est utiliser pour récupérer les lignes comportant les valeurs négatives. Par exemple vous pourriez avoir le mask suivant :\n",
+    "\n",
+    "f True\n",
+    "g False\n",
+    "h True\n",
+    "i False\n",
+    "j False\n",
+    "\n",
+    "```python\n",
+    "C = pd.DataFrame( np.random.randn(5, 5), columns=list(\"abcde\"), index=list(\"fghij\"))\n",
+    "# 1. Somme de toutes les valeurs négatives\n",
+    "print( C[C<0].sum().sum() )\n",
+    "\n",
+    "# 2. Remplacez dans la colonne b les valeurs négatives par la moyenne des valeurs positives de la colonne.\n",
+    "\n",
+    "C.loc[C['b'] < 0, 'b'] = C.loc[C['b'] > 0, 'b'].mean()\n",
+    "\n",
+    "print(C)\n",
+    "```"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 54,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.72744694524716147"
+      ]
+     },
+     "execution_count": 54,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "C = pd.DataFrame( np.random.randn(5, 5), columns=list(\"abcde\"), index=list(\"fghij\"))\n",
+    "C.loc[C['b'] > 0, 'b'].mean()"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.5.2"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
