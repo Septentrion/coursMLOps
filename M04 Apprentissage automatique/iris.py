@@ -54,10 +54,21 @@ print("Forme des des étiquettes de test :", test_y.shape)
 # Construction du modèle
 # --------------------------------------------------------
 
+# Nous utilisons ici deux types de couches Keras :
+# 1. Input, qui sert seulement à indiquer la taille du vecteur de données en entrée (ici 4)
+# 2. Dense, qui indique une couche dont tous les neurones sont connectés aux précédents et aux suivants
+# NB. Il n'y a pas de couche de sortie explicite, la dernière remplit cet office
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.Input(shape=(4,)))
+# Chaque couche est associée à une fonction d'activation qui joue un peu le rôle « d'interrupteur »
+# La fonction ReLu, par exemple, rend x si x > 0 et 0 si x < 0
+# Ces fonctions sont essentielles au bon fonctionnement du système
+# `relu` est la fonction principalement utilisée, avec `sigmoid`
 model.add(tf.keras.layers.Dense(64, activation='relu'))
 model.add(tf.keras.layers.Dense(64, activation='relu'))
+# La fonction `softmax` est la principale fonction d'activation utilisée sur les couches de sortie pour les tâches de classification
+# Son rôle est de faire en sorte que la somme de probabiités des différentes classes soit égale à 1
+# et de mieux discriminer les différents résultats
 model.add(tf.keras.layers.Dense(3, activation='softmax'))
 model.summary()
 
@@ -113,11 +124,17 @@ print('Test accuracy:', accuracy)
 # --------------------------------------------------------
 
 # Réalisation de prédictions avec l'ensemble de test
+# `predict` soumet un ensemble d'exemples au modèle et rend le résultat sous forme de tableau
 y_pred = model.predict(X_test)
 
+# On peut vérfier que les résultats sont en fait des probabilités en affichant `y_pred`
+# La probabilité la plus grande (en princie beaucoup plus élevée que les autres) est considérée comme la « réponse » ud système.
+print(y_pred)
+
 # Vérification de la pertinence des prédictions
-# (`argmax` retroune l'indice de la valeur macimale d'un tableau)
+# (`argmax` retourne l'indice de la valeur maximale d'un tableau)
 actual = np.argmax(y_test,axis=1)
 predicted = np.argmax(y_pred,axis=1)
 print(f"Actual: {actual}")
 print(f"Predicted: {predicted}")
+
